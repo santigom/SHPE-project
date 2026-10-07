@@ -1,2 +1,3 @@
 # SHPE-project
-SWE Director Training Project
+SWE Director Training Project:
+I will be making a web app that allows users to log and rate anime or manga series that they have consumed. The 2 types for this project will be the user(id / login) and the entry (anime or manga). The 4 queries for this project will be finding a user by their id, finding a specific anime/manga entry by its id, returning all entries that belong to a certain user which fills the collection, and one that returns the status a user set for a series being in progress, dropped, or completed. The 4 mutations for this project will be creating a user, adding an entry, updating an entry, and deleting an entry. 
