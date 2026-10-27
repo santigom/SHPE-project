@@ -15,6 +15,7 @@ const typeDefs = `
         notes: String
     }    
     type Query {
+        hello: String!
         me: User
         myEntries: [Entry!]!
         entry(id: ID!): Entry

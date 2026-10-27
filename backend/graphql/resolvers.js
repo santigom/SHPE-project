@@ -5,6 +5,7 @@ const Entry = require('../models/Entry');
 
 const resolvers = {
     Query: {
+        hello: () => 'Hello from the backend!',
         me: async (parent, args, context) => {
             if(!context.userId){
                 throw new Error('You must be logged in');
