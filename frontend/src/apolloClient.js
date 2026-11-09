@@ -5,16 +5,12 @@ const httpLink = new HttpLink({
   uri: 'http://localhost:4000/graphql'
 })
 
-const authLink = new SetContextLink(({ headers }) => {
-  const token = localStorage.getItem('token')
-
-  return {
-    headers: {
-      ...headers,
-      authorization: token ? `Bearer ${token}` : ''
-    }
-  }
-})
+const authLink = new SetContextLink((prevContext) => ({
+  headers: {
+    ...prevContext.headers,
+    authorization: `Bearer ${localStorage.getItem('token') || ''}`,
+  },
+}))
 
 const client = new ApolloClient({
   link: authLink.concat(httpLink),

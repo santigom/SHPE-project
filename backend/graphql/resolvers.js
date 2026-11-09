@@ -109,12 +109,14 @@ const resolvers = {
                     _id: {$ne:id},
                     userId: context.userId,
                     title: cleanTitle,
-                    mediaType: mediaType
+                    mediaType: entry.mediaType
                 }).collation({locale: 'en', strength: 2});
 
                 if (existingEntry){
                     throw new Error('You already have this title in your list');
                 }
+
+                entry.title = cleanTitle;
             }
 
             
@@ -137,7 +139,8 @@ const resolvers = {
                 userId: context.userId
             });
 
-            return deletedEntry !== null;
+            if(!deletedEntry) throw new Error('Entry not found');
+            return true;
         },
 
         incrementProgress: async(parent,{id}, context) => {
@@ -155,6 +158,10 @@ const resolvers = {
             }
 
             entry.progress += 1;
+
+            if (entry.status === 'planned') {
+                entry.status = 'in_progress';
+            }
 
             await entry.save();
             return entry;

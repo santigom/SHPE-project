@@ -1,0 +1,90 @@
+.container {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 24px;
+}
+
+.card {
+  display: flex;
+  gap: 12px;
+  padding: 16px;
+  border-radius: 8px;
+}
+
+button {
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.error {
+  color: crimson;
+}
+
+.container h1 {
+  font-size: 2rem;
+  line-height: 1.2;
+  margin: 0 0 1rem;
+}
+
+div.card {
+  background: #20212b;
+  border: 1px solid #383a49;
+  border-left: 4px solid #b39aff;
+  border-radius: 12px;
+  padding: 1rem;
+  margin: 0.85rem 0;
+  gap: 0.75rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+div.card h2 {
+  margin: 0;
+  margin-right: auto;
+}
+
+.login-panel {
+  width: min(90%, 360px);
+  margin: 12vh auto 0;
+  padding: 1.5rem;
+  box-sizing: border-box;
+  background: #20212b;
+  border: 1px solid #383a49;
+  border-top: 4px solid #b39aff;
+  border-radius: 12px;
+  text-align: left;
+}
+
+.login-panel h1 {
+  margin: 0 0 0.5rem;
+  font-size: 1.8rem;
+  line-height: 1.15;
+  color: #f3efff;
+}
+
+.login-panel p {
+  margin: 0 0 1.25rem;
+  color: #b9b8c8;
+}
+
+.login-panel form,
+.login-panel label {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.login-panel form {
+  gap: 0.9rem;
+}
+
+.login-panel input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0.5rem;
+}
