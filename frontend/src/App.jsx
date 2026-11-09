@@ -65,7 +65,6 @@ function App() {
       await addEntry({ variables: { title: title.trim(), mediaType } })
       setTitle('')
     } catch {
-      // The form displays the error using addError.message.
     }
   }
 

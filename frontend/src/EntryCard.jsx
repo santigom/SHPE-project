@@ -8,6 +8,7 @@ const INCREMENT_PROGRESS = gql`
     incrementProgress(id: $id) {
       id
       progress
+      status
     }
   }
 `
@@ -27,7 +28,6 @@ export default function EntryCard({ id, title, mediaType, progress, rating, note
     try {
       await incrementProgress({ variables: { id } })
     } catch {
-      // The error message is displayed below the button.
     }
   }
 
@@ -42,7 +42,6 @@ export default function EntryCard({ id, title, mediaType, progress, rating, note
     try {
       await deleteEntry({ variables: { id } })
     } catch {
-      // The card displays deleteError.message below the button.
     }
   }
 

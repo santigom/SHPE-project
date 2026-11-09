@@ -48,6 +48,7 @@ const handleSubmit = (e) => {
           type="text"
           value={username}
           onChange={(e) => setUsername(e.target.value)}
+          required
         />
       </label>
     {isRegistering && (
@@ -67,6 +68,7 @@ const handleSubmit = (e) => {
           type="password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
+          required
         />
       </label>
 

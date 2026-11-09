@@ -45,9 +45,13 @@ const resolvers = {
     // LOGIN & REGISTER MUTATION (similar to setters)
     Mutation: {
         register: async (parent, { username, email, password }) => {
+            if (!password.trim()) {
+                throw new Error('Password is required');
+            }
+
             const hashedPassword = await bcrypt.hash(password, 10);
             const user = await User.create({ username, email, password: hashedPassword });
-            return jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {expiresIn : '1d'});
+            return jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: '1d' });
         },
 
         login: async (parent, { username, password }) => {

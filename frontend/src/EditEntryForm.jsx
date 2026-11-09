@@ -88,7 +88,6 @@ export default function EditEntryForm({ id, onClose }) {
       await updateEntry({ variables })
       onClose()
     } catch {
-      // saveError is shown below. Keep the form open so the user can fix it.
     }
   }
 
