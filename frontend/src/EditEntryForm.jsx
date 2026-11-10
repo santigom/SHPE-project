@@ -1,3 +1,4 @@
+import { statusLabels } from './statusLabels.js'
 import { gql } from '@apollo/client'
 import { useQuery, useMutation } from '@apollo/client/react'
 
@@ -42,104 +43,95 @@ const UPDATE_ENTRY = gql`
   }
 `
 
-export default function EditEntryForm({ id, onClose }) {
+export default function EditEntryForm({ id, onCancel }) {
   const { data, loading, error } = useQuery(GET_ENTRY, {
-    variables: { id }
+    variables: { id }, fetchPolicy: 'network-only',
   })
+  const [updateEntry, { loading: saving, error: saveError }] = useMutation(UPDATE_ENTRY, {
+    refetchQueries: ['MyEntries'], awaitRefetchQueries: true,
+  })
+  const entry = data?.entry
 
-  const [updateEntry, { loading: saving, error: saveError }] = useMutation(
-    UPDATE_ENTRY,
-    { refetchQueries: ['MyEntries'] }
-  )
-
-  if (loading) return <p>Loading entry...</p>
-
-  if (error || !data?.entry) {
-    return (
-      <div>
-        <p className="error">{error?.message || 'Entry not found'}</p>
-        <button type="button" onClick={onClose}>Back</button>
-      </div>
-    )
-  }
-
-  const entry = data.entry
-
-  async function handleSave(event) {
+  async function handleSubmit(event) {
     event.preventDefault()
-
     const form = new FormData(event.currentTarget)
     const title = form.get('title').trim()
+    if (!title) return
     const rating = form.get('rating')
-
     const variables = {
-      id,
-      status: form.get('status'),
-      rating: rating === '' ? null : Number(rating),
-      progress: Number(form.get('progress')),
-      notes: form.get('notes')
+      id, status: form.get('status'), progress: Number(form.get('progress')),
+      notes: form.get('notes'), rating: rating === '' ? null : Number(rating),
     }
-
-    if (title !== entry.title) {
-      variables.title = title
-    }
-
+    if (title !== entry.title) variables.title = title
     try {
       await updateEntry({ variables })
-      onClose()
-    } catch {
-    }
+      onCancel()
+    } catch { /* Keep the form open and display the server error. */ }
   }
-
   return (
-    <form onSubmit={handleSave}>
-      <h2>Edit {entry.title}</h2>
-
-      <p>
-        <label>
-          Title: <input name="title" defaultValue={entry.title} required />
-        </label>
-      </p>
-
-      <p>
-        <label>
-          Status: <select name="status" defaultValue={entry.status}>
-            <option value="planned">Planned</option>
-            <option value="in_progress">In progress</option>
-            <option value="completed">Completed</option>
-            <option value="on_hold">On hold</option>
-            <option value="dropped">Dropped</option>
-          </select>
-        </label>
-      </p>
-
-      <p>
-        <label>
-          Rating (1–10): <input name="rating" type="number" min="1" max="10"
-            step="any" defaultValue={entry.rating ?? ''} />
-        </label>
-      </p>
-
-      <p>
-        <label>
-          {entry.mediaType === 'anime' ? 'Episodes watched: ' : 'Chapters read: '}
-          <input name="progress" type="number" min="0" step="1"
-            defaultValue={entry.progress} required />
-        </label>
-      </p>
-
-      <p>
-        <label>
-          Notes: <textarea name="notes" defaultValue={entry.notes ?? ''} />
-        </label>
-      </p>
-
-      <button type="submit" disabled={saving}>
-        {saving ? 'Saving...' : 'Save'}
-      </button>
-      <button type="button" onClick={onClose} disabled={saving}>Cancel</button>
-
-      {saveError && <p className="error">{saveError.message}</p>}
-    </form>
-  )
+    <div className="modal-backdrop" role="presentation">
+      <section
+        className="modal edit-modal"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="edit-title"
+      >
+        <div className="modal-kicker">Update your log</div>
+        <h2 id="edit-title">Edit entry</h2>
+        {loading || error || !entry ? (
+          <>
+            <p role="status">{loading ? "Loading entry…" : error?.message || "Entry not found."}</p>
+            <button className="secondary-button" onClick={onCancel}>Close</button>
+          </>
+        ) : <form onSubmit={handleSubmit}>
+          <label>
+            <span>Title</span>
+            <input name="title" defaultValue={entry.title} required pattern=".*\S.*" autoFocus />
+          </label>
+          <div className="form-grid">
+            <label>
+              <span>Status</span>
+              <div className="select-wrap">
+                <select name="status" defaultValue={entry.status}>
+                  {Object.entries(statusLabels).map(([value, label]) => (
+                    <option key={value} value={value}>{label}</option>
+                  ))}
+                </select>
+              </div>
+            </label>
+            <label>
+              <span>Rating</span>
+              <div className="select-wrap">
+                <select name="rating" defaultValue={entry.rating ?? ''}>
+                  <option value="">Unrated</option>
+                  {entry.rating != null && !Number.isInteger(entry.rating) &&
+                    <option value={entry.rating}>{entry.rating} / 10</option>}
+                  {Array.from({ length: 10 }, (_, i) => i + 1).map(value => (
+                    <option key={value} value={value}>{value} / 10</option>
+                  ))}
+                </select>
+              </div>
+            </label>
+          </div>
+          <label>
+            <span>Progress</span>
+            <input name="progress" type="number" min="0" step="1" defaultValue={entry.progress} required />
+          </label>
+          <label>
+            <span>Personal note</span>
+            <textarea name="notes" rows={4} defaultValue={entry.notes ?? ''} placeholder="What did you think?" />
+          </label>
+          {saveError && <p className="error" role="alert">{saveError.message}</p>}
+          <div className="modal-actions">
+            <button type="button" className="secondary-button" disabled={saving} onClick={onCancel}>
+              Cancel
+            </button>
+            <button type="submit" disabled={saving} className="primary-button">
+              Save changes
+            </button>
+          </div>
+        </form>}
+      </section>
+    </div>
+  );
 }
